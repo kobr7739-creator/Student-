@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>منصة الاستعداد للامتحانات الوزارية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#17203a;--mut:#6b7488;--bd:#e3e8f2;--pr:#4f46e5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0e1424;--card:#172038;--tx:#eaf0ff;--mut:#97a3c0;--bd:#26314f;--pr:#818cf8}}
+:root[data-theme=dark]{--bg:#0e1424;--card:#172038;--tx:#eaf0ff;--mut:#97a3c0;--bd:#26314f;--pr:#818cf8}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Tahoma,"Segoe UI",system-ui,sans-serif;line-height:1.6;min-height:100vh}
+header{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:18px 16px 14px}
+header h1{margin:0;font-size:1.25rem}header p{margin:2px 0 0;opacity:.85;font-size:.85rem}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--bd)}
+nav button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 14px;border-radius:999px;font:inherit;font-size:.9rem;cursor:pointer}
+nav button.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+main{max-width:980px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.stat{text-align:center}.stat b{display:block;font-size:1.7rem;color:var(--pr)}.stat span{color:var(--mut);font-size:.8rem}
+h2{font-size:1.05rem;margin:0 0 10px}
+.bar{height:10px;background:var(--bd);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;border-radius:9px;transition:width .4s}
+.row{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:8px 0;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.ch{width:44px;height:44px;border-radius:12px;border:2px solid var(--bd);background:none;color:var(--tx);font:inherit;font-weight:700;cursor:pointer}
+.ch.d{color:#fff;border-color:transparent}
+button.a,select,input,textarea{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:8px 12px}
+button.a{background:var(--pr);color:#fff;border:0;cursor:pointer}button.g{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
+.per{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;border-inline-start:5px solid}
+.per.k{opacity:.6}.per input{width:22px;height:22px;margin-top:4px}.per small{color:var(--mut);display:block}
+.tag{font-size:.75rem;padding:2px 8px;border-radius:99px;color:#fff}
+.ring{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;margin:auto}
+.ring div{width:114px;height:114px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:1.7rem;font-weight:700}
+.timer{font-size:3.4rem;text-align:center;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums}
+.col{display:flex;align-items:flex-end;gap:6px;height:120px}.col div{flex:1;text-align:center;font-size:.7rem;color:var(--mut)}.col i{display:block;background:var(--pr);border-radius:6px 6px 0 0;min-height:2px;margin-bottom:4px}
+.fc{min-height:130px;display:grid;place-items:center;text-align:center;font-size:1.15rem;padding:16px;border:2px dashed var(--bd);border-radius:14px;cursor:pointer}
+.ch.s{width:38px;height:38px;font-size:.78rem;border-radius:10px}.tip{background:rgba(79,70,229,.1);border-radius:12px;padding:10px;font-size:.9rem}
+.hide{display:none}
+</style></head><body>
+<header><h1>🎓 منصة الاستعداد للامتحانات الوزارية</h1><p id="hd"></p></header>
+<nav id="nav"></nav><main id="m"></main>
+<script>
+const S={phys:{n:'الطبيعيات',c:8,k:'#f59e0b'},math:{n:'الرياضيات',c:6,k:'#3b82f6'},crypt:{n:'نظم التشفير',c:6,k:'#8b5cf6'},eng:{n:'الإنجليزي',c:8,k:'#10b981'},fore:{n:'التحقيق الجنائي الرقمي',c:5,k:'#ef4444'},isl:{n:'الإسلامية',c:5,k:'#14b8a6'},ar:{n:'اللغة العربية (صفحات)',c:113,k:'#ec4899'},ai:{n:'الذكاء الاصطناعي',c:0,k:'#6366f1'}};
+const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const P=[
+[['phys',2,'حل قوانين ومسائل الفصل بالورقة والقلم وتطبيق مسائل حصة اليوم مباشرة'],['crypt',1.5,'رسم خوارزميات التشفير ومخططاتها يدوياً ومراجعة شرح اليوم'],['eng',1.5,'حل تمارين Unit اليوم وحفظ 10–15 مفردة ومعاكسة مع كتابتها باليد']],
+[['math',2,'حل تمارين الفصل بيدك والتركيز على الأمثلة المعقدة التي شُرحت اليوم'],['fore',1.5,'قراءة الموضوع واستخراج التعاريف ثم تسميع ذاتي بصوت عالٍ'],['crypt',1.5,'حل أسئلة وتمارين على الخوارزميات المأخوذة (الجزء العملي والرياضي)']],
+[['fore',2,'تلخيص وقراءة كامل ما أُخذ اليوم (5 حصص) وتثبيت حفظه'],['ar',1.5,'قراءة قواعد الموضوع وتمارين الإعراب وحفظ جزء من الأدب'],['math',1.5,'مراجعة سريعة وحل مسائل وزارية على الفصل الحالي']],
+[['phys',2,'متابعة حل مسائل الفصول وقراءة الشرحيات والتعاليل بالورقة والقلم'],['ai',1.5,'دراسة مفاهيم وخوارزميات اليوم وربطها بالمنطق البرمجي'],['ar',1.5,'كتابة إنشاء أو مراجعة القواعد وحفظ موضوع جديد في الأدب']],
+[['math',2,'إنهاء تمارين الأسبوع وحل الأفكار الوزارية للفصل الحالي'],['ai',1.5,'تثبيت الشرحيات ورسم الهياكل والخوارزميات'],['isl',1.5,'حفظ السور أو الأحاديث بالتكرار الصوتي ثم كتابتها في دفتر']],
+[['math',2,'مراجعة سريعة لقوانين وملاحظات الرياضيات والطبيعيات والتشفير (اختبار ذهني)'],['isl',2,'تسميع ذاتي لمواد الحفظ: إسلامية، تحقيق جنائي، عربي، إنجليزي'],['rest',0,'راحة تامة وإغلاق الكتب لتجديد الطاقة']],
+[['phys',2,'رياضيات أو طبيعيات: المادة التي تحتاج جهداً إضافياً هذا الأسبوع'],['eng',1.5,'مراجعة القواعد وكتابة إنشاء'],['fore',1.5,'إسلامية أو تحقيق جنائي: إنجاز فصل أو موضوع جديد']]];
+const END=new Date('2027-01-20T00:00:00'),T0=new Date('2026-10-05T00:00:00');
+const iso=d=>{d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const today=()=>iso(new Date());
+let st;try{st=JSON.parse(localStorage.getItem('st3')||'null')}catch(e){}
+st=st||{ch:{},cnt:{},sc:{},mn:{},cards:[]};
+let cl;try{cl=JSON.parse(localStorage.getItem('cl3')||'null')}catch(e){}cl=cl||{url:'',key:'',code:'',auto:false,last:''};
+let cmsg='',t3=null;
+const scl=()=>{try{localStorage.setItem('cl3',JSON.stringify(cl))}catch(e){}};
+const save=()=>{st.ts=Date.now();try{localStorage.setItem('st3',JSON.stringify(st))}catch(e){}if(cl.auto&&cl.url&&cl.key&&cl.code){clearTimeout(t3);t3=setTimeout(()=>push(),3000)}};
+const cnt=k=>st.cnt[k]||S[k].c, done=k=>(st.ch[k]||[]).slice(0,cnt(k)).filter(Boolean).length;
+const tot=()=>Object.keys(S).reduce((a,k)=>a+cnt(k),0), dn=()=>Object.keys(S).reduce((a,k)=>a+done(k),0);
+const mins=(k,d)=>{const o=st.mn[k]||{};return d?(o[d]||0):Object.values(o).reduce((a,b)=>a+b,0)};
+const allMin=d=>Object.keys(S).reduce((a,k)=>a+mins(k,d),0);
+const dleft=()=>Math.max(0,Math.ceil((END-new Date())/864e5));
+const exp=()=>Math.min(1,Math.max(0,(new Date()-T0)/(END-T0)));
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const bar=(p,c)=>`<div class="bar"><i style="width:${p}%;background:${c}"></i></div>`;
+let tab='home',selDay=new Date().getDay(),fcI=0,fcShow=false,fcSub='all';
+const tabs={home:'🏠 الرئيسية',ch:'📚 الفصول',sch:'🗓️ الجدول',tm:'⏱️ المؤقت',an:'📊 التحليل',fc:'🧠 بطاقات',cl:'☁️ النسخ'};
+function nav(){document.getElementById('nav').innerHTML=Object.keys(tabs).map(k=>`<button class="${k==tab?'on':''}" onclick="go('${k}')">${tabs[k]}</button>`).join('')+`<button onclick="more()">⚙️</button>`}
+function go(t){tab=t;render()}
+function more(){const a=prompt('اكتب: 1 تصدير النسخة الاحتياطية، 2 استيراد، 3 تصفير كل البيانات، 4 تغيير عدد صفحات العربي، 5 تغيير عدد فصول الذكاء الاصطناعي');
+if(a=='1')prompt('انسخ النص واحتفظ به',JSON.stringify(st));
+if(a=='2'){try{st=JSON.parse(prompt('ألصق النسخة'));save();render()}catch(e){alert('نص غير صالح')}}
+if(a=='3'&&confirm('حذف كل التقدم؟')){st={ch:{},cnt:{},sc:{},mn:{},cards:[]};save();render()}
+if(a=='4'||a=='5'){const k=a=='4'?'ar':'ai',n=parseInt(prompt('العدد الجديد',cnt(k)));if(n>0){st.cnt[k]=n;save();render()}}}
+st.cf=st.cf||{};
+function tgl(k,i){st.ch[k]=st.ch[k]||[];st.cf[k]=st.cf[k]||[];
+if(!st.ch[k][i]){st.ch[k][i]=true;const r=parseInt(prompt('قيّم ثقتك بهذا الفصل من 1 (ضعيف) إلى 5 (متقن):\n(إلغاء = بدون تقييم)'));if(r>=1&&r<=5)st.cf[k][i]=r}
+else{const r=parseInt(prompt('التقييم الحالي: '+(st.cf[k][i]||'بدون')+'\nاكتب تقييماً جديداً من 1 إلى 5، أو 0 للتراجع عن الإنجاز'));
+if(r===0){st.ch[k][i]=false;st.cf[k][i]=0}else if(r>=1&&r<=5)st.cf[k][i]=r}
+save();render()}
+function cfs(k,i){const r=(st.cf[k]||[])[i];return r?'box-shadow:inset 0 -6px 0 '+(r<=2?'#ef4444':r==3?'#fbbf24':'#22c55e'):''}
+function weakCard(){const w=[];Object.keys(S).forEach(k=>(st.cf[k]||[]).forEach((r,i)=>{if(r&&r<=2&&(st.ch[k]||[])[i])w.push([k,i,r])}));
+const all=[];Object.keys(S).forEach(k=>(st.cf[k]||[]).forEach(r=>{if(r)all.push(r)}));
+const avg=all.length?(all.reduce((a,b)=>a+b,0)/all.length).toFixed(1):'—';
+return `<div class="card"><h2>🎯 مستوى الثقة (المتوسط ${avg}/5)</h2>${w.length?`<p style="margin:0 0 8px;font-size:.9rem">فصول تحتاج إعادة مراجعة:</p><div class="chips">${w.map(x=>`<span class="tag" style="background:${S[x[0]].k};font-size:.85rem;padding:5px 12px" onclick="go('ch')">${S[x[0]].n} · ${x[1]+1} (${x[2]}/5)</span>`).join('')}</div>`:'<p class="tip" style="margin:0">لا توجد فصول ضعيفة. قيّم الفصول عند إنجازها لتظهر هنا ما يحتاج مراجعة.</p>'}</div>`}
+function per(d,i){const key=d+'_'+i;st.sc[key]=!st.sc[key];save();render()}
+function streak(){let n=0,d=new Date();for(;;){const k=iso(d),a=allMin(k)>0||Object.keys(st.sc).some(x=>x.startsWith(k)&&st.sc[x]);if(a)n++;else if(k!=today())break;d.setDate(d.getDate()-1);if(n>400)break}return n}
+function wkDate(dw){const d=new Date();d.setDate(d.getDate()-d.getDay()+dw);return iso(d)}
+function home(){const t=tot(),d=dn(),p=pct(d,t),e=Math.round(exp()*100),dl=dleft(),rem=t-d;
+const behind=p<e-5;const wk=Math.max(1,dl/7);
+return `<div class="card"><div class="ring" style="background:conic-gradient(var(--pr) ${p*3.6}deg,var(--bd) 0)"><div>${p}%</div></div>
+<p style="text-align:center;color:var(--mut)">أنجزت ${d} من ${t} فصلاً/موضوعاً</p></div>
+<div class="grid"><div class="card stat"><b>${dl}</b><span>يوماً حتى 20 يناير</span></div><div class="card stat"><b>${rem}</b><span>فصل متبقٍ</span></div><div class="card stat"><b>${(rem/wk).toFixed(1)}</b><span>فصل/أسبوع مطلوب</span></div><div class="card stat"><b>${streak()}</b><span>🔥 أيام متتالية</span></div></div>
+<div class="card"><h2>الوتيرة مقابل الخطة</h2><div class="row"><span>إنجازك ${p}%</span><span>المتوقع اليوم ${e}%</span></div>${bar(p,'var(--pr)')}<div style="height:6px"></div>${bar(e,'#9ca3af')}
+<p class="tip" style="margin-top:10px">${behind?'⚠️ أنت متأخر قليلاً عن الخطة. ركّز على المادة الأضعف تقدماً واستغل يوم السبت.':'✅ وتيرتك ممتازة، حافظ على الاستمرار.'}</p></div>
+<div class="card"><h2>مهام اليوم (${DAYS[new Date().getDay()]})</h2>${perList(new Date().getDay())}</div>
+${weakCard()}<div class="card"><h2>تقدم المواد</h2>${Object.keys(S).map(k=>`<div style="margin:8px 0"><div class="row" style="margin:2px 0"><span>${S[k].n}</span><span>${done(k)}/${cnt(k)}</span></div>${bar(pct(done(k),cnt(k)),S[k].k)}</div>`).join('')}</div>`}
+function setN(k){const n=parseInt(prompt('كم عدد '+(k=='ar'?'صفحات':'فصول')+' '+S[k].n+'؟',cnt(k)||''));if(n>=0&&n<=500){st.cnt[k]=n;save();render()}}
+function chs(){return Object.keys(S).map(k=>{const n=cnt(k),a=st.ch[k]||[],u=k=='ar'?'صفحة':'فصل';return `<div class="card"><div class="row"><h2 style="margin:0;color:${S[k].k}">${S[k].n}</h2><span>${n?done(k)+'/'+n+' · '+pct(done(k),n)+'%':'لم يُحدد العدد بعد'} <button class="a g" onclick="setN('${k}')">✏️ تحديد العدد</button></span></div>${bar(pct(done(k),n),S[k].k)}<div class="chips" style="margin-top:10px">${n?Array.from({length:n},(_,i)=>`<button class="ch ${n>20?'s':''} ${a[i]?'d':''}" style="${a[i]?'background:'+S[k].k+';'+cfs(k,i):''}" onclick="tgl('${k}',${i})">${i+1}</button>`).join(''):`<button class="a" onclick="setN('${k}')">➕ حدد عدد ${u}ات ${S[k].n}</button>`}</div></div>`}).join('')+`<p style="color:var(--mut);font-size:.85rem">اضغط على الرقم لتأكيد إنجازه، واضغط على الرقم المنجز لتغيير تقييم ثقتك أو التراجع. الشريط السفلي: أحمر ضعيف (1–2)، أصفر متوسط (3)، أخضر متقن (4–5).</p>`}
+function perList(dw){const d=wkDate(dw);return P[dw].map((x,i)=>{const s=S[x[0]]||{n:'راحة',k:'#94a3b8'},k=!!st.sc[d+'_'+i];return `<label class="per ${k?'k':''}" style="border-color:${s.k}"><input type="checkbox" ${k?'checked':''} onchange="per('${d}',${i})"><div><b>${s.n}</b> ${x[1]?`<span class="tag" style="background:${s.k}">${x[1]} ساعة</span>`:''}<small>${x[2]}</small></div></label>`}).join('')}
+function sch(){const w=Math.round(P.reduce((a,d)=>a+d.reduce((b,x)=>b+x[1],0),0));
+return `<div class="chips" style="margin-bottom:12px">${DAYS.map((n,i)=>`<button class="a ${i==selDay?'':'g'}" onclick="selDay=${i};render()">${n}</button>`).join('')}</div><div class="card"><h2>${DAYS[selDay]} — ${wkDate(selDay)}</h2>${perList(selDay)}</div><p style="color:var(--mut)">إجمالي ساعات الأسبوع حسب الجدول: ${w} ساعة. الجمعة يوم مراجعة واسترجاع نشط، والسبت للاستكمال.</p>
+<div class="card"><h2>معدل الإنجاز المطلوب</h2><p style="margin:0;font-size:.9rem">الرياضيات والتشفير: أسبوعان–2.5 لكل فصل · الطبيعيات والإنجليزي: 1–1.5 أسبوع · التحقيق والإسلامية والذكاء الاصطناعي: 2–3 أسابيع · العربي: دراسة مستمرة وحفظ الأدب أولاً بأول.</p></div>`}
+let tmL=1500,tmI=null,tmSub='math',tmLen=25;
+function tm(){const m=Math.floor(tmL/60),s=tmL%60;
+return `<div class="card"><div class="row"><select id="ts" onchange="tmSub=this.value">${Object.keys(S).map(k=>`<option value="${k}" ${k==tmSub?'selected':''}>${S[k].n}</option>`).join('')}</select><label>المدة <input type="number" id="tl" value="${tmLen}" min="1" max="120" style="width:70px" onchange="setLen(this.value)"> د</label></div>
+<div class="timer" id="tt">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</div>
+<div class="row" style="justify-content:center"><button class="a" onclick="tmGo()">${tmI?'⏸ إيقاف':'▶ ابدأ'}</button><button class="a g" onclick="tmReset()">↺ إعادة</button></div>
+<p style="text-align:center;color:var(--mut);font-size:.85rem">عند انتهاء الجلسة تُسجَّل دقائقها تلقائياً في المادة المختارة.</p></div>
+<div class="card"><h2>تسجيل يدوي</h2><div class="row"><input type="number" id="mm" placeholder="دقائق" style="width:100px"><button class="a" onclick="addMin()">إضافة للمادة المختارة</button></div><p>مذاكرة اليوم: <b>${allMin(today())}</b> دقيقة</p></div>`}
+function setLen(v){tmLen=Math.max(1,+v||25);if(!tmI){tmL=tmLen*60;render()}}
+function tmGo(){if(tmI){clearInterval(tmI);tmI=null}else tmI=setInterval(()=>{tmL--;if(tmL<=0){clearInterval(tmI);tmI=null;log(tmSub,tmLen);tmL=tmLen*60;alert('🎉 انتهت الجلسة! سُجّلت '+tmLen+' دقيقة');}if(tab=='tm')render()},1000);if(tab=='tm')render()}
+function tmReset(){clearInterval(tmI);tmI=null;tmL=tmLen*60;render()}
+function log(k,n){st.mn[k]=st.mn[k]||{};st.mn[k][today()]=(st.mn[k][today()]||0)+n;save()}
+function addMin(){const n=+document.getElementById('mm').value;if(n>0){log(tmSub,n);render()}}
+function an(){const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push([DAYS[d.getDay()],allMin(iso(d))])}
+const mx=Math.max(60,...days.map(x=>x[1])),keys=Object.keys(S),tm_=keys.reduce((a,k)=>a+mins(k),0);
+const weak=keys.filter(k=>cnt(k)>0).map(k=>[k,pct(done(k),cnt(k))]).sort((a,b)=>a[1]-b[1])[0],t=tot(),d=dn(),dl=dleft();
+return `<div class="grid"><div class="card stat"><b>${(tm_/60).toFixed(1)}</b><span>ساعة مذاكرة إجمالاً</span></div><div class="card stat"><b>${pct(d,t)}%</b><span>الإنجاز الكلي</span></div><div class="card stat"><b>${Object.values(st.sc).filter(Boolean).length}</b><span>فترات مكتملة</span></div></div>
+<div class="card"><h2>دقائق آخر 7 أيام</h2><div class="col">${days.map(x=>`<div><i style="height:${x[1]/mx*90}px"></i>${x[1]}<br>${x[0]}</div>`).join('')}</div></div>
+<div class="card"><h2>توزيع وقت المذاكرة</h2>${keys.map(k=>`<div class="row" style="margin:4px 0"><span>${S[k].n}</span><span>${Math.round(mins(k)/6)/10} س</span></div>${bar(tm_?pct(mins(k),tm_):0,S[k].k)}`).join('')}</div>
+<div class="card"><h2>التوقعات والتوصيات</h2><p class="tip">أضعف مادة تقدماً: <b>${S[weak[0]].n}</b> (${weak[1]}%).<br>المتبقي ${t-d} فصلاً خلال ${dl} يوماً، أي حوالي فصل كل ${(dl/Math.max(1,t-d)).toFixed(1)} يوم.<br>${dl<14?'📌 اقتربت الامتحانات: انتقل إلى المراجعة الشاملة وحل الأسئلة الوزارية.':'📌 اجعل يوم الجمعة للمراجعة النشطة وحاول إنهاء فصل كل أسبوع في كل مادة رئيسية.'}</p></div>`}
+function fc(){const L=st.cards.filter(c=>fcSub=='all'||c.s==fcSub),c=L[fcI%Math.max(1,L.length)];
+return `<div class="card"><div class="row"><select onchange="fcSub=this.value;fcI=0;fcShow=false;render()"><option value="all">كل المواد</option>${Object.keys(S).map(k=>`<option value="${k}" ${k==fcSub?'selected':''}>${S[k].n}</option>`).join('')}</select><span>${L.length} بطاقة</span></div>
+${c?`<div class="fc" onclick="fcShow=!fcShow;render()">${fcShow?c.a:c.q}</div><div class="row" style="justify-content:center;margin-top:10px"><button class="a g" onclick="fcI++;fcShow=false;render()">التالية ←</button><button class="a g" onclick="delC(${st.cards.indexOf(c)})">🗑 حذف</button></div><p style="text-align:center;color:var(--mut);font-size:.8rem">اضغط على البطاقة لإظهار الجواب</p>`:'<p style="text-align:center;color:var(--mut)">لا توجد بطاقات بعد. أضف قانوناً أو تعريفاً أو مفردة للحفظ.</p>'}</div>
+<div class="card"><h2>إضافة بطاقة</h2><select id="cs">${Object.keys(S).map(k=>`<option value="${k}">${S[k].n}</option>`).join('')}</select><textarea id="cq" placeholder="السؤال / المفردة / القانون" style="width:100%;margin:8px 0" rows="2"></textarea><textarea id="ca" placeholder="الجواب" style="width:100%" rows="2"></textarea><div style="height:8px"></div><button class="a" onclick="addC()">إضافة</button></div>`}
+function addC(){const q=cq.value.trim(),a=ca.value.trim();if(q&&a){st.cards.push({s:cs.value,q,a});save();render()}}
+function delC(i){st.cards.splice(i,1);save();render()}
+function render(){document.getElementById('hd').textContent=`متبقٍ ${dleft()} يوماً على 20 يناير · أنجزت ${dn()} من ${tot()}`;nav();document.getElementById('m').innerHTML={home,ch:chs,sch,tm,an,fc,cl:cloud}[tab]()}
+
+const base=()=>cl.url.trim().replace(/\/+$/,'');
+const hd=()=>{const h={apikey:cl.key.trim(),'Content-Type':'application/json'};if(cl.key.trim().startsWith('eyJ'))h.Authorization='Bearer '+cl.key.trim();return h};
+const ok=()=>cl.url&&cl.key&&cl.code&&cl.code.length>=20;
+function setMsg(m){cmsg=m;if(tab=='cl')render()}
+async function push(){if(!ok()){setMsg('أكمل الرابط والمفتاح والرمز (20 حرفاً على الأقل)');return}
+try{const r=await fetch(base()+'/rest/v1/rpc/put_backup',{method:'POST',headers:hd(),body:JSON.stringify({p_code:cl.code.trim(),p_data:st})});if(!r.ok)throw 0;cl.last=new Date().toLocaleString('ar');scl();setMsg('✅ تم رفع النسخة الاحتياطية '+cl.last)}catch(e){setMsg('❌ فشل الرفع. تأكد من الرابط والمفتاح وتنفيذ كود SQL واتصال الإنترنت')}}
+async function pull(silent){if(!ok()){if(!silent)setMsg('أكمل الإعدادات أولاً');return}
+try{const r=await fetch(base()+'/rest/v1/rpc/get_backup',{method:'POST',headers:hd(),body:JSON.stringify({p_code:cl.code.trim()})});if(!r.ok)throw 0;const d=await r.json();if(!d||!d.ts){if(!silent)setMsg('لا توجد نسخة سحابية بهذا الرمز بعد');return}
+if(confirm('وجدت نسخة سحابية بتاريخ '+new Date(d.ts).toLocaleString('ar')+'\nاستعادتها ستستبدل البيانات الحالية. متابعة؟')){st=d;st.cf=st.cf||{};st.cnt=st.cnt||{};st.ch=st.ch||{};st.sc=st.sc||{};st.mn=st.mn||{};st.cards=st.cards||[];try{localStorage.setItem('st3',JSON.stringify(st))}catch(e){}setMsg('✅ تمت الاستعادة');render()}}
+catch(e){if(!silent)setMsg('❌ تعذر الاتصال بقاعدة البيانات')}}
+function genCode(){const a=new Uint8Array(16);crypto.getRandomValues(a);cl.code='k'+Array.from(a).map(x=>x.toString(36).padStart(2,'0')).join('');scl();render()}
+function saveCl(){cl.url=document.getElementById('cu').value.trim();cl.code=document.getElementById('cc').value.trim();cl.key=document.getElementById('ck').value.trim();cl.auto=document.getElementById('ca2').checked;scl();setMsg('تم حفظ الإعدادات'+(cl.auto?' والنسخ التلقائي مفعّل':''));if(cl.auto)push()}
+function dl(){const b=new Blob([JSON.stringify(st)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='study-backup-'+today()+'.json';a.click()}
+function imp(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(confirm('استبدال البيانات الحالية بالملف؟')){st=d;st.cf=st.cf||{};save();render()}}catch(x){alert('ملف غير صالح')}};r.readAsText(f)}
+const SQLT=`create table if not exists backups(
+  code text primary key check (length(code) >= 20),
+  data jsonb not null,
+  updated_at timestamptz default now()
+);
+alter table backups enable row level security;
+
+create or replace function put_backup(p_code text, p_data jsonb)
+returns void language sql security definer set search_path = public as $$
+  insert into backups(code, data, updated_at) values (p_code, p_data, now())
+  on conflict (code) do update set data = excluded.data, updated_at = now();
+$$;
+
+create or replace function get_backup(p_code text)
+returns jsonb language sql security definer set search_path = public as $$
+  select data from backups where code = p_code;
+$$;
+
+grant execute on function put_backup(text, jsonb), get_backup(text) to anon;`;
+function cpSql(){try{navigator.clipboard.writeText(SQLT);setMsg('✅ نُسخ كود SQL')}catch(e){setMsg('انسخ الكود يدوياً')}}
+function cloud(){return `<div class="card"><h2>☁️ نسخ احتياطي سحابي (Supabase)</h2>
+<p class="tip" style="margin-top:0">${cmsg||'الحالة: '+(ok()?'مضبوط'+(cl.last?' · آخر رفع '+cl.last:''):'غير مضبوط بعد')}</p>
+<label>رابط المشروع (Project URL)</label><input id="cu" style="width:100%;margin:4px 0 10px" dir="ltr" placeholder="https://xxxx.supabase.co" value="${cl.url}">
+<label>المفتاح العام (anon / publishable key)</label><input id="ck" style="width:100%;margin:4px 0 10px" dir="ltr" value="${cl.key}">
+<label>رمز النسخ الخاص بك (سرّي، لا تشاركه)</label><div class="row" style="margin:4px 0 10px"><input id="cc" style="flex:1" dir="ltr" value="${cl.code}"><button class="a g" onclick="saveCl();genCode()">🎲 توليد</button></div>
+<label class="row" style="justify-content:flex-start"><input type="checkbox" id="ca2" ${cl.auto?'checked':''}> نسخ تلقائي بعد كل تغيير</label>
+<div class="row"><button class="a" onclick="saveCl()">💾 حفظ الإعدادات</button><button class="a g" onclick="push()">⬆️ رفع الآن</button><button class="a g" onclick="pull()">⬇️ استعادة</button></div></div>
+<div class="card"><h2>خطوات الإعداد (مجاني)</h2><ol style="margin:0;padding-inline-start:20px;font-size:.9rem"><li>أنشئ مشروعاً في supabase.com.</li><li>من القائمة افتح <b>SQL Editor</b> والصق الكود التالي ثم اضغط Run.</li><li>من <b>Project Settings ثم API</b> انسخ Project URL والمفتاح العام (anon أو publishable) والصقهما أعلاه.</li><li>اضغط 🎲 لتوليد رمزك ثم «حفظ الإعدادات».</li></ol>
+<div class="row" style="margin-top:10px"><button class="a g" onclick="cpSql()">📋 نسخ كود SQL</button></div>
+<pre dir="ltr" style="background:var(--bg);padding:10px;border-radius:10px;overflow-x:auto;font-size:.75rem">${SQLT}</pre>
+<p style="font-size:.85rem;color:var(--mut)">الجدول مغلق عن الوصول المباشر، والقراءة والكتابة تتمان فقط عبر دالتين تتطلبان معرفة رمزك الطويل. لا تستخدم مفتاح service_role هنا أبداً.</p></div>
+<div class="card"><h2>نسخة احتياطية كملف</h2><div class="row"><button class="a g" onclick="dl()">⬇️ تنزيل ملف النسخة</button><label class="a g" style="padding:8px 12px;border-radius:10px;cursor:pointer">⬆️ استيراد ملف<input type="file" accept=".json" hidden onchange="imp(event)"></label></div><p style="font-size:.85rem;color:var(--mut)">أنصحك بتنزيل ملف كل أسبوع كطبقة حماية ثانية.</p></div>`}
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+if(cl.url&&cl.key&&cl.code&&dn()==0&&Object.keys(st.mn).length==0)pull(true);
+render();
+</script></body></html>
